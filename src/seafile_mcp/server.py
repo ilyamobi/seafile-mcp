@@ -20,7 +20,7 @@ from seafile_mcp.utils import format_size, get_mime_type, is_binary_file, safe_d
 # Initialize FastMCP server
 mcp = FastMCP(
     "Seafile MCP",
-    description="Access Seafile cloud storage from AI assistants",
+    instructions="Access Seafile cloud storage from AI assistants",
 )
 
 
