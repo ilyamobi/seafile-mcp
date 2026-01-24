@@ -75,7 +75,10 @@ class SeafileClient:
         # Ensure server URL ends with a slash for proper URL joining
         self._server_url = server_url.rstrip("/") + "/"
         self._timeout = timeout
-        self._client = httpx.AsyncClient(timeout=timeout)
+        self._client = httpx.AsyncClient(timeout=timeout, follow_redirects=True)
+
+        # Determine if server uses HTTPS for URL fixing
+        self._use_https = server_url.lower().startswith("https://")
 
         # Authentication state
         self._auth_token: str | None = None
@@ -103,6 +106,22 @@ class SeafileClient:
     def is_repo_token_auth(self) -> bool:
         """Check if the client is using repository token authentication."""
         return self._repo_token is not None
+
+    def _fix_url_scheme(self, url: str) -> str:
+        """Fix URL scheme to match server configuration.
+
+        Seafile servers behind reverse proxies may return http:// URLs
+        even when accessed via https://. This method fixes the scheme.
+
+        Args:
+            url: URL returned by Seafile API.
+
+        Returns:
+            URL with corrected scheme.
+        """
+        if self._use_https and url.startswith("http://"):
+            return "https://" + url[7:]
+        return url
 
     def _get_headers(self) -> dict[str, str]:
         """Get request headers with authentication token.
@@ -490,7 +509,7 @@ class SeafileClient:
 
         # Response is a quoted URL string
         download_url = response.text.strip().strip('"')
-        return download_url
+        return self._fix_url_scheme(download_url)
 
     async def download_file(self, repo_id: str | None = None, path: str = "/") -> bytes:
         """Download file content.
@@ -549,7 +568,7 @@ class SeafileClient:
             )
 
         upload_url = response.text.strip().strip('"')
-        return upload_url
+        return self._fix_url_scheme(upload_url)
 
     async def upload_file(
         self,
