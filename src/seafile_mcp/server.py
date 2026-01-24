@@ -34,11 +34,11 @@ class Library(BaseModel):
 
     id: str = Field(description="Unique library identifier")
     name: str = Field(description="Library name")
-    owner: str = Field(description="Library owner username")
-    size: int = Field(description="Total size in bytes")
-    encrypted: bool = Field(description="Whether the library is encrypted")
-    permission: str = Field(description="User's permission level (r, rw)")
-    mtime: int = Field(description="Last modification timestamp")
+    owner: str = Field(default="", description="Library owner username")
+    size: int = Field(default=0, description="Total size in bytes")
+    encrypted: bool = Field(default=False, description="Whether the library is encrypted")
+    permission: str = Field(default="r", description="User's permission level (r, rw)")
+    mtime: int | str = Field(default=0, description="Last modification timestamp")
 
 
 class DirEntry(BaseModel):
@@ -46,9 +46,9 @@ class DirEntry(BaseModel):
 
     name: str = Field(description="Entry name")
     type: str = Field(description="Entry type: 'file' or 'dir'")
-    size: int = Field(description="Size in bytes (0 for directories)")
-    mtime: int = Field(description="Last modification timestamp")
-    permission: str = Field(description="Permission level")
+    size: int = Field(default=0, description="Size in bytes (0 for directories)")
+    mtime: int | str = Field(description="Last modification timestamp")
+    permission: str = Field(default="r", description="Permission level")
 
 
 class FileContent(BaseModel):
@@ -57,7 +57,7 @@ class FileContent(BaseModel):
     path: str = Field(description="File path in the library")
     name: str = Field(description="File name")
     size: int = Field(description="File size in bytes")
-    mtime: int = Field(description="Last modification timestamp")
+    mtime: int | str = Field(description="Last modification timestamp")
     content: Optional[str] = Field(default=None, description="Text content (if readable)")
     download_url: Optional[str] = Field(
         default=None, description="Temporary download URL (for binary/large files)"
@@ -73,7 +73,7 @@ class FileInfo(BaseModel):
     path: str = Field(description="File path in the library")
     name: str = Field(description="File name")
     size: int = Field(description="File size in bytes")
-    mtime: int = Field(description="Last modification timestamp")
+    mtime: int | str = Field(description="Last modification timestamp")
     mime_type: str = Field(description="MIME type of the file")
 
 
