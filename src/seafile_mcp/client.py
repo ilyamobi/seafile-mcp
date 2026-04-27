@@ -594,7 +594,7 @@ class SeafileClient:
         upload_url = await self.get_upload_link(repo_id, parent_dir)
 
         files = {"file": (filename, content)}
-        data = {"parent_dir": parent_dir}
+        data = {"parent_dir": parent_dir, "replace": "1"}
 
         try:
             response = await self._client.post(
